@@ -12,35 +12,126 @@ function Square(props) {
   );
 }
 
+function ToggleButton(props) {
+  return (
+    <div>
+      <input type="checkbox" 
+      id="switch" 
+      onChange={props.handleChange} 
+      checked={props.descending}/>
+      <label htmlFor="switch">
+        <span>{props.label}
+        </span>
+      </label>
+    </div>
+  );
+}
+
 class Board extends React.Component {
+
+  renderSquare(i) {
+    return <Square key={i}
+    value={this.props.squares[i]}
+    onClick = {() => this.props.onClick(i)}
+    />;
+  }
+
+  renderRow(i) {
+    let j;
+    const tableRow = [];
+    for (j = 0; j < this.props.maxWidth; j = j + 1) {
+      tableRow.push(this.renderSquare(3 * i + j))
+    }
+    return (<div className="board-row" key={i}>
+      {tableRow}
+    </div>
+    )
+  }
+
+  render() {
+    let i;
+    const table = [];
+    for (i = 0; i < this.props.maxHeight; i = i + 1) {
+      table.push(this.renderRow(i));
+    }
+    return (
+      <div>
+        {table}
+      </div>
+    )
+  }
+}
+
+class Game extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      squares: Array(9).fill(null),
+      history: [{
+        squares: Array(9).fill(null),
+      }],
+      stepNumber: 0,
       xIsNext: true,
+      descending: true,
     }
   }
 
   handleClick(i) {
-    const squares = this.state.squares.slice();
+    const history = this.state.history.slice(0, this.state.stepNumber + 1);
+    const current = history[history.length - 1];
+    const squares = current.squares.slice();
     if (calculateWinner(squares) || squares[i]) {
       return;
     }
     squares[i] = this.state.xIsNext ? 'X' : 'O';
     this.setState({
-      squares: squares,
+      history: history.concat([{
+        squares: squares,
+      }]),
+      stepNumber: history.length,
       xIsNext: !this.state.xIsNext,
     });
   }
 
-  renderSquare(i) {
-    return <Square value={this.state.squares[i]}
-    onClick = {() => this.handleClick(i)}
-    />;
+  handleChange() {
+    this.setState({
+      descending: !this.state.descending,
+    })
+  }
+
+  renderMoveList(list) {
+    return list.map((step, move) => {
+      const desc = move ? 
+      'Go to move #' + move : 'Go to game start';
+      return (
+        <li key={move}>
+          <button style={{'fontWeight': this.state.stepNumber === move ? 'bold' : 'normal'}} 
+          onClick={() => this.jumpTo(move)}>{desc}</button>
+        </li>
+      )
+    })
+  }
+
+  jumpTo(step) {
+    this.setState({
+      stepNumber: step,
+      xIsNext: (step % 2) === 0,
+    })
   }
 
   render() {
-    const winner = calculateWinner(this.state.squares);
+    const tableSize = {
+      maxWidth: 3,
+      maxHeight: 3,
+    }
+    const history = this.state.history;
+    const current = history[this.state.stepNumber];
+    const winner = calculateWinner(current.squares);
+
+    const moves = this.renderMoveList(history.slice())
+    if (this.state.descending) {
+      moves.reverse();
+    }
+    
     let status;
     if (winner) {
       status = 'Winner: ' + winner;
@@ -49,39 +140,23 @@ class Board extends React.Component {
     }
 
     return (
-      <div>
-        <div className="status">{status}</div>
-        <div className="board-row">
-          {this.renderSquare(0)}
-          {this.renderSquare(1)}
-          {this.renderSquare(2)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(3)}
-          {this.renderSquare(4)}
-          {this.renderSquare(5)}
-        </div>
-        <div className="board-row">
-          {this.renderSquare(6)}
-          {this.renderSquare(7)}
-          {this.renderSquare(8)}
-        </div>
-      </div>
-    );
-  }
-}
-
-class Game extends React.Component {
-
-  render() {
-    return (
       <div className="game">
         <div className="game-board">
-          <Board />
+          <Board 
+            squares={current.squares}
+            onClick={(i) => this.handleClick(i)}
+            maxWidth={tableSize.maxWidth}
+            maxHeight={tableSize.maxHeight}
+          />
         </div>
         <div className="game-info">
-          <div>{/* status */}</div>
-          <ol>{/* TODO */}</ol>
+          <div>{status}</div>
+          <ToggleButton
+            handleChange={() => this.handleChange()}
+            label="Descending move order"
+            checked={this.state.descending}
+          />
+          <ol>{moves}</ol>
         </div>
       </div>
     );
