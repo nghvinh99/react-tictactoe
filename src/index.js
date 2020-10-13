@@ -15,14 +15,15 @@ function Square(props) {
 
 function ToggleButton(props) {
   return (
-    <div>
-      <input type="checkbox" 
-      id="switch" 
-      onChange={props.handleChange} 
-      checked={props.descending}/>
-      <label htmlFor="switch">
-        <span>{props.label}
-        </span>
+    <div className="tg-list-item">
+      <input className="tgl tgl-flip"
+        id="switch" type="checkbox"
+        onChange={props.handleChange}
+      />
+      <label className="tgl-btn"
+        data-tg-off="Ascending"
+        data-tg-on="Descending"
+        htmlFor="switch">
       </label>
     </div>
   );
@@ -74,7 +75,7 @@ class Game extends React.Component {
       }],
       stepNumber: 0,
       xIsNext: true,
-      descending: true,
+      descending: false,
     }
   }
 
