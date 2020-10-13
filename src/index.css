@@ -89,7 +89,7 @@ input:checked + label:after {
 }
 
 label:active:after {
-	width: 50px;
+	width: 43px;
 }
 
 span {

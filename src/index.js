@@ -70,6 +70,7 @@ class Game extends React.Component {
     this.state = {
       history: [{
         squares: Array(9).fill(null),
+        index: null,
       }],
       stepNumber: 0,
       xIsNext: true,
@@ -90,6 +91,7 @@ class Game extends React.Component {
     this.setState({
       history: history.concat([{
         squares: squares,
+        index: i,
       }]),
       stepNumber: history.length,
       xIsNext: !this.state.xIsNext,
@@ -103,9 +105,14 @@ class Game extends React.Component {
   }
 
   renderMoveList(list) {
+    const position = [
+      [1, 1], [1, 2], [1, 3],
+      [2, 1], [2, 2], [2, 3],
+      [3, 1], [3, 2], [3, 3]
+    ]
     return list.map((step, move) => {
       const desc = move ? 
-      'Go to move #' + move : 'Go to game start';
+      'Go to position (' + position[step.index] + ')'  : 'Go to game start';
       return (
         <li key={move}>
           <button style={{'fontWeight': this.state.stepNumber === move ? 'bold' : 'normal'}} 
@@ -120,6 +127,10 @@ class Game extends React.Component {
       stepNumber: step,
       xIsNext: (step % 2) === 0,
     })
+  }
+
+  checkDraw(squares) {
+    return (!squares.includes(null));
   }
 
   render() {
@@ -143,6 +154,8 @@ class Game extends React.Component {
       winner.line.forEach(i => {
         highlight[i] = true;
       })
+    } else if (this.checkDraw(current.squares)) {
+      status = 'Game draw!';
     } else {
       status = 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
     }
@@ -192,12 +205,10 @@ function calculateWinner(squares) {
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
       res.winner = squares[a];
       res.line = lines[i];
-      // return squares[a];
       return res;
     }
   }
   return res;
-  // return null;
 }
 
 // ========================================
