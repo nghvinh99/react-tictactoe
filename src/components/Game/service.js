@@ -1,26 +1,119 @@
-function calculateWinner(squares) {
+function checkWinning(squares, line, player) {
+  const res = line.every(pos => {
+    return (squares[pos] === player);
+  });
+  return res;
+}
+
+function getRowLine(pos, limit, start, size) {
+  const line = Array(limit).fill(0).map((value, i) => {
+    const newPosition = start + pos[i];
+    if (Math.floor(start / size) !== Math.floor(newPosition / size)) return null;
+    return newPosition;
+  });
+  return line;
+}
+
+function getColLine(pos, limit, start, size) {
+  const line = Array(limit).fill(0).map((value, i) => {
+    const newPosition = start + pos[i] * size;
+    return newPosition;
+  });
+  return line;
+}
+
+function getDiagLine(pos, limit, start, size) {
+  let cut = false;
+  const line = Array(limit).fill(0).map((value, i) => {
+    const newPosition = start + pos[i] * size + i;
+    if (newPosition % size === (size - 1)) {
+      cut = true;
+      return newPosition;
+    }
+    if (cut) return null;
+    return newPosition;
+  });
+  return line;
+}
+
+function getAntiDiagLine(pos, limit, start, size) {
+  let cut = false;
+  const line = Array(limit).fill(0).map((value, i) => {
+    const newPosition = start - pos[i] * size + i;
+    if (newPosition % size === (size - 1)) {
+      cut = true;
+      return newPosition;
+    }
+    if (cut) return null;
+    return newPosition;
+  });
+  return line;
+}
+
+function calculateWinner(squares, size, index) {
   const res = {
     winner: null,
     line: null,
   }
-  const lines = [
-    [0, 1, 2],
-    [3, 4, 5],
-    [6, 7, 8],
-    [0, 3, 6],
-    [1, 4, 7],
-    [2, 5, 8],
-    [0, 4, 8],
-    [2, 4, 6],
-  ];
-  for (let i = 0; i < lines.length; i++) {
-    const [a, b, c] = lines[i];
-    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      res.winner = squares[a];
-      res.line = lines[i];
-      return res;
-    }
+
+  if (index === null)
+    return res;
+
+  let limit = 3;
+  if (size === 4) {
+    limit = 4;
+  } else if (size >= 5) {
+    limit = 5;
   }
+
+  const player = squares[index];
+  const position = [...Array(limit).keys()];
+
+
+  let tIndex = index;
+  const differ = 1;
+  while (squares[tIndex] === squares[tIndex - differ]) {
+    tIndex = tIndex - differ;
+  };
+
+
+  let line = getRowLine(position, limit, tIndex, size);
+  let winning = checkWinning(squares, line, player);
+  if (!winning) {
+    tIndex = index;
+    const differ = size;
+    while (squares[tIndex] === squares[tIndex - differ]) {
+      tIndex = tIndex - differ;
+    };
+    line = getColLine(position, limit, tIndex, size);
+    winning = checkWinning(squares, line, player);
+  }
+
+  if (!winning) {
+    tIndex = index;
+    const differ = size + 1;
+    while (squares[tIndex] === squares[tIndex - differ]) {
+      tIndex = tIndex - differ;
+    };
+    line = getDiagLine(position, limit, tIndex, size);
+    winning = checkWinning(squares, line, player);
+  }
+
+  if (!winning) {
+    tIndex = index;
+    const differ = size - 1;
+    while (squares[tIndex] === squares[tIndex + differ]) {
+      tIndex = tIndex + differ;
+    };
+    line = getAntiDiagLine(position, limit, tIndex, size);
+    winning = checkWinning(squares, line, player);
+  }
+
+  if (winning) {
+    res.winner = player;
+    res.line = line;
+  }
+
   return res;
 }
 
