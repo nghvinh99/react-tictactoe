@@ -6,6 +6,10 @@ import ListItem from '../ListItem/index';
 import SizeInput from '../SizeInput/index';
 
 function Game() {
+  const size = {
+    min: 3,
+    max: 30,
+  }
   const [tableSize, setTableSize] = useState(3);
   const [history, setHistory] = useState([{
     squares: Array(Math.pow(tableSize, 2)).fill(null),
@@ -43,11 +47,28 @@ function Game() {
     setDescending(!descending);
   }
 
-  const handleInput = (event) => {
-    const size = event.target.value;
-    if ((size >= 3) && (size <= 30))
-      setTableSize(event.target.value);
-    else return;
+  const setMin = () => {
+    setTableSize(size.min);
+    jumpTo(0);
+  }
+
+  const setMax = () => {
+    setTableSize(size.max);
+    jumpTo(0);
+  }
+
+  const decreaseTableSize = () => {
+    if (tableSize > size.min) {
+      setTableSize(tableSize - 1);
+      jumpTo(0);
+    }
+  }
+
+  const increaseTableSize = () => {
+    if (tableSize < size.max) {
+      setTableSize(tableSize + 1);
+      jumpTo(0);
+    }
   }
 
   const jumpTo = (step) => {
@@ -63,7 +84,7 @@ function Game() {
   const list = history.slice();
   list.map((step, move) => {
     const desc = move ?
-      'Go to position ( ' + (Math.floor(step.index / tableSize) + 1) + ', '
+      'Go to position (' + (Math.floor(step.index / tableSize) + 1) + ', '
       + (step.index % tableSize + 1) + ')'
       : 'Go to game start';
     moveList.push(<ListItem
@@ -94,18 +115,13 @@ function Game() {
 
   return (
     <div className="game">
-      <div className="game-board">
-        <Board
-          squares={current.squares}
-          onClick={(i) => handleClick(i)}
-          tableSize={tableSize}
-          highlight={highlight}
-        />
-      </div>
       <div className="game-info">
         <SizeInput
           value={tableSize}
-          handleInput={(event) => handleInput(event)}
+          setMin={() => setMin()}
+          decrease={() => decreaseTableSize()}
+          increase={() => increaseTableSize()}
+          setMax={() => setMax()}
         />
         <div>{status}</div>
         <ToggleButton
@@ -116,6 +132,14 @@ function Game() {
         <ol>
           {moveList}
         </ol>
+      </div>
+      <div className="game-board">
+        <Board
+          squares={current.squares}
+          onClick={(i) => handleClick(i)}
+          tableSize={tableSize}
+          highlight={highlight}
+        />
       </div>
     </div>
   );

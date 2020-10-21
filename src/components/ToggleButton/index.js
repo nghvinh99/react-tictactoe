@@ -2,7 +2,7 @@ import React from 'react';
 
 function ToggleButton({ handleChange }) {
   return (
-    <div className="tg-list-item">
+    <div style={{ marginTop: "-10px" }}>
       <input className="tgl tgl-flip"
         id="switch" type="checkbox"
         onChange={handleChange}

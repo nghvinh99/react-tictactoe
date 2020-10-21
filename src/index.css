@@ -46,7 +46,8 @@ ol, ul {
 }
 
 .game-info {
-  margin-left: 20px;
+  margin-right: 20px;
+  width: 15%;
 }
 /* Toggle Button */
 input[type=checkbox]{
@@ -116,4 +117,39 @@ label {
 .tgl-flip:checked + .tgl-btn:active:after {
   -webkit-transform: rotateY(20deg);
           transform: rotateY(20deg);
+}
+
+input[type=number] {
+  text-align: center;
+  border: none;
+  margin: 0px;
+  width: 20px;
+  height: 20px;
+}
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.value-button {
+  display: inline-block;
+  border: 1px solid #ddd;
+  margin: 0px;
+  width: 33px;
+  height: 20px;
+  text-align: center;
+  vertical-align: middle;
+  background: #eee;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.value-button:hover {
+  cursor: pointer;
 }

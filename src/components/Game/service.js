@@ -8,7 +8,8 @@ function checkWinning(squares, line, player) {
 function getRowLine(pos, limit, start, size) {
   const line = Array(limit).fill(0).map((value, i) => {
     const newPosition = start + pos[i];
-    if (Math.floor(start / size) !== Math.floor(newPosition / size)) return null;
+    if (Math.floor(start / size) !== Math.floor(newPosition / size))
+      return null;
     return newPosition;
   });
   return line;
@@ -72,11 +73,10 @@ function calculateWinner(squares, size, index) {
 
   let tIndex = index;
   const differ = 1;
-  while (squares[tIndex] === squares[tIndex - differ]) {
+  while ((squares[tIndex] === squares[tIndex - differ]) &&
+    (tIndex % size !== 0)) {
     tIndex = tIndex - differ;
   };
-
-
   let line = getRowLine(position, limit, tIndex, size);
   let winning = checkWinning(squares, line, player);
   if (!winning) {
@@ -92,9 +92,11 @@ function calculateWinner(squares, size, index) {
   if (!winning) {
     tIndex = index;
     const differ = size + 1;
-    while (squares[tIndex] === squares[tIndex - differ]) {
+    while ((squares[tIndex] === squares[tIndex - differ]) &&
+      (tIndex % size !== 0)) {
       tIndex = tIndex - differ;
     };
+    console.log("calculateWinner -> tIndex", tIndex)
     line = getDiagLine(position, limit, tIndex, size);
     winning = checkWinning(squares, line, player);
   }
@@ -102,7 +104,8 @@ function calculateWinner(squares, size, index) {
   if (!winning) {
     tIndex = index;
     const differ = size - 1;
-    while (squares[tIndex] === squares[tIndex + differ]) {
+    while ((squares[tIndex] === squares[tIndex + differ]) &&
+      (tIndex % size !== 0)) {
       tIndex = tIndex + differ;
     };
     line = getAntiDiagLine(position, limit, tIndex, size);
